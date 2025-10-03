@@ -1,6 +1,7 @@
 {% set name = "cuik_molmaker" %}
 {% set version = "0.1" %}
 {% set pytorch_version = pytorch_cpu %}
+{% set rdkit_version = rdkit %}
 
 package:
   name: {{ name|lower }}
@@ -12,7 +13,7 @@ source:
 
 build:
   script_env:
-    - RDKIT_VERSION=2024.09.4
+    - RDKIT_VERSION={{ rdkit_version }}
     - TORCH_VERSION={{ pytorch_version }}
   number: 0
 
@@ -39,8 +40,8 @@ requirements:
     - cross-python_{{ target_platform }}  # [build_platform != target_platform]
     - python
     - eigen
-    - librdkit-dev ==2024.09.4
-    - rdkit ==2024.09.4
+    - librdkit-dev {{ rdkit_version }}
+    - rdkit {{ rdkit_version }}
     - pytorch-cpu {{ pytorch_version }}
     - pybind11 ==2.13.6
     - libboost-devel ==1.86.0
@@ -51,7 +52,7 @@ requirements:
     - pip
   run:
     - python
-    - rdkit ==2024.09.4
+    - rdkit {{ rdkit_version }}
     - pytorch-cpu {{ pytorch_version }}
 
 test:
