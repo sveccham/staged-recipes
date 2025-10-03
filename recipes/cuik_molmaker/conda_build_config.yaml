@@ -1,0 +1,21 @@
+python:
+    - 3.11
+    # - 3.12
+    # - 3.13
+
+pytorch_cpu:
+    - 2.6.0
+    # - 2.7.0
+
+rdkit:
+    - 2024.09.4
+    - 2025.03.2
+
+# Pin runtime dependencies to match build versions
+pin_run_as_build:
+  rdkit:
+    min_pin: x.x.x
+    max_pin: x.x.x
+  pytorch-cpu:
+    min_pin: x.x.x
+    max_pin: x.x
