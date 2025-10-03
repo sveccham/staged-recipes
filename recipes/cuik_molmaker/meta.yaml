@@ -1,0 +1,88 @@
+# Note: there are many handy hints in comments in this example -- remove them when you've finalized your recipe
+# If your package is python based, we recommend using Grayskull to generate it instead:
+# https://github.com/conda-incubator/grayskull
+
+# Jinja variables help maintain the recipe as you'll update the version only here.
+# Using the name variable with the URL in line 16 is convenient
+# when copying and pasting from another recipe, but not really needed.
+{% set name = "cuik_molmaker" %}
+{% set version = "0.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: cuik_molmaker_code.tar.gz
+  sha256: 2a113f67cc2838967875328c5ec0dfa29bc8db8e009503cbaca8222df46af72e
+
+# build:
+#   # Uncomment the following line if the package is pure Python and the recipe is exactly the same for all platforms.
+#   # It is okay if the dependencies are not built for all platforms/versions, although selectors are still not allowed.
+#   # See https://conda-forge.org/docs/maintainer/knowledge_base.html#noarch-python for more details.
+#   # noarch: python
+#   # If the installation is complex, or different between Unix and Windows, use separate bld.bat and build.sh files instead of this key.
+#   # By default, the package will be built for the Python versions supported by conda-forge and for all major OSs.
+#   # Add the line "skip: True  # [py<35]" (for example) to limit to Python 3.5 and newer, or "skip: True  # [not win]" to limit to Windows.
+#   skip: True  # [py<310]
+#   # More info about selectors can be found in the conda-build docs: 
+#   # https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html#preprocessing-selectors
+#   script: build.sh  # [unix]
+#   number: 0
+
+requirements:
+  build:
+    # If your project compiles code (such as a C extension) then add the required compilers as separate entries here.
+    # Compilers are named 'c', 'cxx', 'fortran', among others
+    - {{ compiler('cxx') }}
+    - cmake  # if using CMake
+    - make   # if using Makefiles
+    - cross-python_{{ target_platform }}  # [build_platform != target_platform]
+    - python ==3.11
+    - eigen
+    - build
+    - setuptools >=80.0.0
+    - librdkit-dev ==2024.09.4
+    - rdkit ==2024.09.4
+    - pytorch-cpu ==2.6.0
+    - pybind11 ==2.13.6
+    - libboost-devel ==1.86.0
+    - libboost-python-devel ==1.86.0
+  host:
+    - python ==3.11
+    - pip
+  run:
+    - python ==3.11
+    - rdkit ==2024.09.4
+    - pytorch-cpu ==2.6.0
+
+test:
+  # Some packages might need a `test/commands` key to check CLI.
+  # List all the packages/modules that `run_test.py` imports.
+  imports:
+    - cuik_molmaker
+  # For python packages, it is useful to run pip check. However, sometimes the
+  # metadata used by pip is out of date. Thus this section is optional if it is
+  # failing.
+  requires:
+    - pip
+  commands:
+    - pip check
+
+about:
+  home: https://github.com/NVIDIA-Digital-Bio/cuik-molmaker
+  summary: 'C++/python module for featurizing molecules'
+  description: |
+    cuik-molmaker is a specialized package designed for molecular featurization,
+    converting chemical structures into formats that can be effectively used as 
+    inputs for deep learning models, particularly graph neural networks (GNNs).
+  license: Apache-2.0
+  license_family: Apache
+  license_file: LICENSE/License.txt
+  license_url: https://github.com/NVIDIA-Digital-Bio/cuik-molmaker/blob/main/LICENSE/License.txt
+  doc_url: https://github.com/NVIDIA-Digital-Bio/cuik-molmaker/blob/main/README.md
+  dev_url: https://github.com/NVIDIA-Digital-Bio/cuik-molmaker
+
+extra:
+  recipe-maintainers:
+    - sveccham
