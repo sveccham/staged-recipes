@@ -1,12 +1,6 @@
-# Note: there are many handy hints in comments in this example -- remove them when you've finalized your recipe
-# If your package is python based, we recommend using Grayskull to generate it instead:
-# https://github.com/conda-incubator/grayskull
-
-# Jinja variables help maintain the recipe as you'll update the version only here.
-# Using the name variable with the URL in line 16 is convenient
-# when copying and pasting from another recipe, but not really needed.
 {% set name = "cuik_molmaker" %}
 {% set version = "0.1" %}
+{% set pytorch_version = pytorch_cpu %}
 
 package:
   name: {{ name|lower }}
@@ -16,7 +10,12 @@ source:
   url: cuik_molmaker_code.tar.gz
   sha256: 2a113f67cc2838967875328c5ec0dfa29bc8db8e009503cbaca8222df46af72e
 
-# build:
+build:
+  script_env:
+    - RDKIT_VERSION=2024.09.4
+    - TORCH_VERSION={{ pytorch_version }}
+  number: 0
+
 #   # Uncomment the following line if the package is pure Python and the recipe is exactly the same for all platforms.
 #   # It is okay if the dependencies are not built for all platforms/versions, although selectors are still not allowed.
 #   # See https://conda-forge.org/docs/maintainer/knowledge_base.html#noarch-python for more details.
@@ -38,23 +37,22 @@ requirements:
     - cmake  # if using CMake
     - make   # if using Makefiles
     - cross-python_{{ target_platform }}  # [build_platform != target_platform]
-    - python ==3.11
+    - python
     - eigen
-    - build
-    - setuptools >=80.0.0
     - librdkit-dev ==2024.09.4
     - rdkit ==2024.09.4
-    - pytorch-cpu ==2.6.0
+    - pytorch-cpu {{ pytorch_version }}
     - pybind11 ==2.13.6
     - libboost-devel ==1.86.0
     - libboost-python-devel ==1.86.0
   host:
-    - python ==3.11
+    - python
+    - setuptools >=80.0.0
     - pip
   run:
-    - python ==3.11
+    - python
     - rdkit ==2024.09.4
-    - pytorch-cpu ==2.6.0
+    - pytorch-cpu {{ pytorch_version }}
 
 test:
   # Some packages might need a `test/commands` key to check CLI.
@@ -66,8 +64,14 @@ test:
   # failing.
   requires:
     - pip
+    - pytest
+  source_files:
+    - tests/python/
+    - tests/data/
   commands:
     - pip check
+    - python -c "import cuik_molmaker; print('Listing all atom onehot features:');  print(cuik_molmaker.list_all_atom_onehot_features())"
+    - pytest -s tests/python/
 
 about:
   home: https://github.com/NVIDIA-Digital-Bio/cuik-molmaker

@@ -1,6 +1,5 @@
-export TORCH_VERSION=2.6.0
-export RDKIT_VERSION=2024.09.4
-export PYTHON_VERSION=3.11
+# Get Python version from conda-build environment (e.g., 3.11, 3.12, 3.13)
+export PYTHON_VERSION=${PY_VER}
 
 # Validate Torch version
 if [[ ! $TORCH_VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
