@@ -1,0 +1,73 @@
+{% set name = "cuik_molmaker" %}
+{% set version = "0.1" %}
+{% set pytorch_version = pytorch_cpu %}
+{% set rdkit_version = rdkit %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: cuik_molmaker_code.tar.gz
+  sha256: 2a113f67cc2838967875328c5ec0dfa29bc8db8e009503cbaca8222df46af72e
+
+build:
+  script_env:
+    - RDKIT_VERSION={{ rdkit_version }}
+    - TORCH_VERSION={{ pytorch_version }}
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake  # using CMake
+    - make   # using Makefiles
+    - cross-python_{{ target_platform }}  # [build_platform != target_platform]
+    - python
+    - eigen
+    - librdkit-dev {{ rdkit_version }}
+    - rdkit {{ rdkit_version }}
+    - pytorch-cpu {{ pytorch_version }}
+    - pybind11 ==2.13.6
+    - libboost-devel ==1.86.0
+    - libboost-python-devel ==1.86.0
+  host:
+    - python
+    - setuptools >=80.0.0
+    - pip
+  run:
+    - python
+    - rdkit {{ rdkit_version }}
+    - pytorch-cpu {{ pytorch_version }}
+
+test:
+  imports:
+    - cuik_molmaker
+  requires:
+    - pip
+    - pytest
+  source_files:
+    - tests/python/
+    - tests/data/
+  commands:
+    - pip check
+    - python -c "import cuik_molmaker; print('Listing all atom onehot features:');  print(cuik_molmaker.list_all_atom_onehot_features())"
+    - pytest -s tests/python/
+
+about:
+  home: https://github.com/NVIDIA-Digital-Bio/cuik-molmaker
+  summary: 'C++/python module for featurizing molecules'
+  description: |
+    cuik-molmaker is a specialized package designed for molecular featurization,
+    converting chemical structures into formats that can be effectively used as 
+    inputs for deep learning models, particularly graph neural networks (GNNs).
+  license: Apache-2.0
+  license_family: Apache
+  license_file: LICENSE/License.txt
+  license_url: https://github.com/NVIDIA-Digital-Bio/cuik-molmaker/blob/main/LICENSE/License.txt
+  doc_url: https://github.com/NVIDIA-Digital-Bio/cuik-molmaker/blob/main/README.md
+  dev_url: https://github.com/NVIDIA-Digital-Bio/cuik-molmaker
+
+extra:
+  recipe-maintainers:
+    - sveccham
