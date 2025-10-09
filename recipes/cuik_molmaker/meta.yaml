@@ -8,8 +8,8 @@ package:
   version: {{ version }}
 
 source:
-  url: cuik_molmaker_code.tar.gz
-  sha256: 2a113f67cc2838967875328c5ec0dfa29bc8db8e009503cbaca8222df46af72e
+  url: https://github.com/NVIDIA-Digital-Bio/cuik-molmaker/archive/refs/heads/v0.1_release_branch.tar.gz
+  sha256: de55a08c2f4d692a478a2c5384fed567f5d0596d5ed9337e702c10c3e43b6258
 
 build:
   script_env:
