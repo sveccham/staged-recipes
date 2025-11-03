@@ -1,6 +1,5 @@
 {% set name = "cuik_molmaker" %}
-{% set version = "0.1" %}
-{% set pytorch_version = pytorch_cpu %}
+{% set version = "0.2" %}
 {% set rdkit_version = rdkit %}
 
 package:
@@ -8,37 +7,40 @@ package:
   version: {{ version }}
 
 source:
-  url: https://github.com/NVIDIA-Digital-Bio/cuik-molmaker/archive/refs/heads/v0.1_release_branch.tar.gz
-  sha256: de55a08c2f4d692a478a2c5384fed567f5d0596d5ed9337e702c10c3e43b6258
+  # Use a local file as the source for conda-build
+  # TODO: Change this to URL of GitHub release when available
+  url: https://github.com/NVIDIA-Digital-Bio/cuik-molmaker/archive/refs/tags/v0.2.tar.gz
+  sha256: c25faa93a7c75baae60cb29e72fe8dae4b0cd209189a0e7d2ece23426095b46b
 
 build:
   script_env:
     - RDKIT_VERSION={{ rdkit_version }}
-    - TORCH_VERSION={{ pytorch_version }}
   number: 0
 
 requirements:
   build:
     - {{ compiler('cxx') }}
     - cmake  # using CMake
-    - make   # using Makefiles
+    - make   # [unix]
+    - ninja  # [win]
     - cross-python_{{ target_platform }}  # [build_platform != target_platform]
     - python
+  host:
+    - cross-python_{{ target_platform }}  # [build_platform != target_platform]
+    - python
+    - numpy >=1.23
+    - setuptools >=80.0.0
+    - pip
     - eigen
     - librdkit-dev {{ rdkit_version }}
     - rdkit {{ rdkit_version }}
-    - pytorch-cpu {{ pytorch_version }}
-    - pybind11 ==2.13.6
-    - libboost-devel ==1.86.0
-    - libboost-python-devel ==1.86.0
-  host:
-    - python
-    - setuptools >=80.0.0
-    - pip
+    - pybind11 >=2.13
+    - libboost-devel
+    - libboost-python-devel
   run:
     - python
+    - setuptools >=80.0.0
     - rdkit {{ rdkit_version }}
-    - pytorch-cpu {{ pytorch_version }}
 
 test:
   imports:
@@ -46,6 +48,8 @@ test:
   requires:
     - pip
     - pytest
+    - scipy
+    - numpy
   source_files:
     - tests/python/
     - tests/data/
